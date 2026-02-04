@@ -1,0 +1,478 @@
+﻿<Window x:Class="FoxWallet.Views.PrincipalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FoxWallet.Views"
+        xmlns:vm="clr-namespace:FoxWallet.ViewModels"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="CanResizeWithGrip"
+        AllowsTransparency="False"
+        Background="Transparent"
+        Title="FoxWallet" Height="800" Width="850">
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+                      ResizeBorderThickness="6"
+                      GlassFrameThickness="0"
+                      UseAeroCaptionButtons="False"/>
+    </WindowChrome.WindowChrome>
+    
+    <Border CornerRadius="10" 
+            Style="{StaticResource CorFundoPrincipal}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="33"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--#region Barra Botões-->
+            <Border Grid.Row="0"
+                    BorderBrush="Black"
+                    BorderThickness="1"
+                    Background="#FF8A30"
+                    MouseLeftButtonDown="Barra_MouseLeftButtonDown">
+                <DockPanel>
+                    <Button Content="Nova Receita"
+                            Style="{StaticResource BotaoBarraStyle}"
+                            DockPanel.Dock="Left"
+                            Cursor="Hand"
+                            Command="{Binding AbrirNovaReceitaCommand}"/>
+
+                    <Button Content="Nova Despesa"
+                            Style="{StaticResource BotaoBarraStyle}"
+                            DockPanel.Dock="Left"
+                            Cursor="Hand"
+                            Command="{Binding AbrirNovaDespesaCommand}"/>
+
+                    <Menu Style="{StaticResource MenuBarraStyle}">
+                        <MenuItem Header="Relatório" Style="{StaticResource MenuItemBarStyle}">
+                            <MenuItem Header="Relatório do mês/PDF" Command="{Binding RelatorioMesPDFCommand}"/>
+                            <MenuItem Header="Relatório do ano/PDF" Command="{Binding RelatorioAnoPDFCommand}"/>
+                            <Separator/>
+                            <MenuItem Header="Relatório do mês/CSV" Command="{Binding RelatorioMesCSVCommand}"/>
+                            <MenuItem Header="Relatório do ano/CSV" Command="{Binding RelatorioAnoCSVCommand}"/>
+                        </MenuItem>
+                    </Menu>
+
+                    <Button Content="X"
+                            DockPanel.Dock="Right"
+                            Style="{StaticResource BotaoNavegadorX}"
+                            Command="{Binding FecharJanelaPrincipalCommand}"/>
+
+                    <Button Content="□"
+                            DockPanel.Dock="Right"
+                            Style="{StaticResource BotaoNavegadorQuadrado}"
+                            Command="{Binding MaximizarJanelaPrincipalCommand}"/>
+
+                    <Button Content="-"
+                            HorizontalAlignment="Right"
+                            HorizontalContentAlignment="Center"
+                            Style="{StaticResource BotaoNavegador-}"
+                            Command="{Binding MinimizarJanelaPrincipalCommand}"/>
+                </DockPanel>
+            </Border>
+            <!--#endregion-->
+
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"/>
+                    <RowDefinition Height="220"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0"
+                       Content="{Binding MA}"
+                       HorizontalContentAlignment="Center"
+                       VerticalContentAlignment="Center"
+                       Foreground="White"
+                       FontSize="30"/>
+
+                <!--#region DashBoard Principal-->
+                <Border Grid.Row="1"
+                        Margin="10"
+                        BorderBrush="#FF8A30"
+                        BorderThickness="2"
+                        CornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!--#region Orçamento-->
+                        <TextBlock Grid.Column="0" 
+                                   Text="Orçamento: "
+                                   FontSize="30"
+                                   Foreground="White"
+                                   Padding="5"/>
+
+                        <Border Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                BorderBrush="#FF8A30"
+                                BorderThickness="0,0,2,0">
+
+                            <TextBlock Text="{Binding Orcamento, StringFormat=c, ConverterCulture=pt-BR}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Bottom"
+                                       FontSize="60"
+                                       Foreground="#FF8A30"
+                                       Padding="10"/>
+                        </Border>
+                        <!--#endregion-->
+
+                        <!--#region Receitas e Despesas-->
+                        <TextBlock Grid.Row="0" Grid.Column="1" 
+                                   Text="Receitas:"
+                                   Foreground="White"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"
+                                   FontSize="30"
+                                   Margin="5,0,0,0"/>
+
+                        <Border Grid.Column="1"
+                                BorderBrush="#FF8A30"
+                                BorderThickness="0,0,0,1">
+                            <TextBlock Text="{Binding ReceitasVM.ValorTOTReceitas, StringFormat=c, ConverterCulture=pt-BR}"
+                                       Foreground="LawnGreen"
+                                       VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Left"
+                                       FontSize="30"
+                                       Padding="10"/>
+                        </Border>
+
+                        <TextBlock Grid.Row="1" Grid.Column="1"
+                                   Text="Despesas:"
+                                   Foreground="White"
+                                   VerticalAlignment="Top"
+                                   HorizontalAlignment="Left"
+                                   FontSize="30"
+                                   Margin="5,0,0,0"/>
+
+                        <Border Grid.Column="1" Grid.Row="1">
+                            <TextBlock Text="{Binding DespesasVM.ValorTOTDespesas, StringFormat=c, ConverterCulture=pt-BR}"
+                                       Foreground="OrangeRed"
+                                       VerticalAlignment="Bottom"
+                                       HorizontalAlignment="Left"
+                                       FontSize="30"
+                                       Padding="10"/>
+                        </Border>
+                        <!--#endregion-->
+                    </Grid>
+                </Border>
+                <!--#endregion-->
+
+                <!--#region DashBoard Receitas-->
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="15"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Receitas"
+                               FontSize="20"
+                               Foreground="White"
+                               Margin="20,10,0,0"/>
+
+                    <Button Content="Filtro"
+                            Style="{StaticResource BotaoEditarExcluir}"
+                            Command="{Binding FiltroReceitaVM.AbrirPopUpCommand}"
+                            Height="20"
+                            Width="40"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Margin="0,15,50,0"/>
+
+                    <Button Content="Limpar Filtros"
+                            Style="{StaticResource BotaoEditarExcluir}"
+                            Command="{Binding FiltroReceitaVM.LimparCommand}"
+                            Height="20"
+                            Width="90"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Margin="0,15,100,0"/>
+
+                    <Popup IsOpen="{Binding FiltroReceitaVM.PopFiltroRecIsOpen}"
+                           Placement="MousePoint"
+                           StaysOpen="True" 
+                           AllowsTransparency="True">
+                        <Border Background="{StaticResource CorTelaAddBrush}"
+                                CornerRadius="30"
+                                BorderThickness="2"
+                                BorderBrush="#3F3F3F">
+                            <Grid Width="380"
+                                  Height="205">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="35"/>
+                                </Grid.RowDefinitions>
+
+                                <!--#region R0-->
+                                <TextBlock Grid.Column="0" Grid.Row="0"
+                                           Text="Data Início: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <DatePicker Grid.Column="0" Grid.Row="0"
+                                            SelectedDate="{Binding FiltroReceitaVM.TempDataInicioRec}"
+                                            Style="{StaticResource DatePickerAddReceitaDepesa}"/>
+
+                                <TextBlock Grid.Column="1" Grid.Row="0"
+                                           Text="Data Fim: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+
+                                <DatePicker Grid.Column="1" Grid.Row="0"
+                                            SelectedDate="{Binding FiltroReceitaVM.TempDataFimRec}"
+                                            Style="{StaticResource DatePickerAddReceitaDepesa}"/>
+                                <!--#endregion-->
+
+                                <!--#region R1-->
+                                <TextBlock Grid.Column="0" Grid.Row="1"
+                                           Text="Valor Mínimo: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="0"
+                                         Style="{StaticResource TextBoxAddReceitaDespesa}"
+                                         Text="{Binding FiltroReceitaVM.TempValorMinRec, StringFormat=c, ConverterCulture=pt-BR, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <TextBlock Grid.Column="1" Grid.Row="1"
+                                           Text="Valor Máximo: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         Style="{StaticResource TextBoxAddReceitaDespesa}"
+                                         Text="{Binding FiltroReceitaVM.TempValorMaxRec, StringFormat=c, ConverterCulture=pt-BR, UpdateSourceTrigger=PropertyChanged}"/>
+                                <!--#endregion-->
+
+                                <Button Grid.Column="0" Grid.Row="2" 
+                                        Content="Fechar"
+                                        Command="{Binding FiltroReceitaVM.FecharCommand}"
+                                        Style="{StaticResource BotaoEditarExcluir}"/>
+
+                                <Button Grid.Column="1" Grid.Row="2" 
+                                        Content="Salvar"
+                                        Command="{Binding FiltroReceitaVM.SalvarCommand}"
+                                        Style="{StaticResource BotaoEditarExcluir}"/>
+
+                            </Grid>
+                        </Border>
+                    </Popup>
+
+                    <Button Content="+"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource BotaoAddStyle}"
+                            Command="{Binding AbrirNovaReceitaCommand}"/>
+
+                    <Border BorderBrush="#FF8A30"
+                            BorderThickness="2"
+                            Margin="10"
+                            CornerRadius="10">
+                        <ListView x:Name="ListaRec" 
+                                  ItemsSource="{Binding ReceitasFiltradaView}"
+                                  SelectedItem="{Binding ReceitasVM.ReceitaSelecionada}"
+                                  Style="{StaticResource ListViewReceitaDespesa}"
+                                  SizeChanged="ListaRec_SizeChanged">
+                            <ListView.Resources>
+                                <Style TargetType="GridViewColumnHeader"
+                                       BasedOn="{StaticResource EstiloGridViewColumnHeader}" />
+                                <Style TargetType="ListViewItem"
+                                       BasedOn="{StaticResource ListViewItemStyle}"/>
+                            </ListView.Resources>
+
+                            <ListView.View>
+                                <GridView x:Name="GridRec">
+                                    <GridViewColumn Header="Observações" DisplayMemberBinding="{Binding Observacoes}"/>
+                                    <GridViewColumn Header="Preço" DisplayMemberBinding="{Binding Preco, StringFormat=c, ConverterCulture=pt-BR}"/>
+                                    <GridViewColumn Header="Data" DisplayMemberBinding="{Binding dataReceita, StringFormat=d, ConverterCulture=pt-BR}"/>
+                                    <GridViewColumn Header="Tipo de Receita" DisplayMemberBinding="{Binding tipoReceita}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1"
+                                Height="30"
+                                Margin="20,-70,0,0">
+                        <Button Content="Editar"
+                                Style="{StaticResource BotaoEditarExcluir}"
+                                Command="{Binding ReceitasVM.EditarCommand}"/>
+
+                        <Button Content="Excluir"
+                                Style="{StaticResource BotaoEditarExcluir}"
+                                Command="{Binding ReceitasVM.ExcluirCommand}"/>
+                    </StackPanel>
+                </Grid>
+                <!--#endregion-->
+
+                <!--#region DashBoard Despesas-->
+                <Grid Grid.Row="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="20"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Despesas"
+                               FontSize="20"
+                               Foreground="White"
+                               Margin="20,10,0,0"/>
+
+                    <Button Content="Filtro"
+                            Style="{StaticResource BotaoEditarExcluir}"
+                            Command="{Binding FiltroDespesasVM.AbrirPopUpCommand}"
+                            Height="20"
+                            Width="40"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Margin="0,15,50,0"/>
+
+                    <Button Content="Limpar Filtros"
+                            Style="{StaticResource BotaoEditarExcluir}"
+                            Command="{Binding FiltroDespesasVM.LimparCommand}"
+                            Height="20"
+                            Width="90"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Margin="0,15,100,0"/>
+
+
+                    <Popup IsOpen="{Binding FiltroDespesasVM.PopFiltroDespIsOpen}"
+                           Placement="MousePoint"
+                           StaysOpen="True"
+                           AllowsTransparency="True">
+                        <Border Background="{StaticResource CorTelaAddBrush}"
+                                CornerRadius="30"
+                                BorderBrush="#3F3F3F"
+                                BorderThickness="2">
+                            <Grid Width="380"
+                                  Height="205">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="35"/>
+                                </Grid.RowDefinitions>
+
+                                <!--#region R0-->
+                                <TextBlock Grid.Column="0" Grid.Row="0"
+                                           Text="Data Início: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <DatePicker Grid.Column="0" Grid.Row="0"
+                                            SelectedDate="{Binding FiltroDespesasVM.TempDataInicioDesp}"
+                                            Style="{StaticResource DatePickerAddReceitaDepesa}"/>
+
+                                <TextBlock Grid.Column="1" Grid.Row="0"
+                                           Text="Data Fim: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+
+                                <DatePicker Grid.Column="1" Grid.Row="0"
+                                            SelectedDate="{Binding FiltroDespesasVM.TempDataFimDesp}"
+                                            Style="{StaticResource DatePickerAddReceitaDepesa}"/>
+                                <!--#endregion-->
+
+                                <!--#region R1-->
+                                <TextBlock Grid.Column="0" Grid.Row="1"
+                                           Text="Valor Mínimo: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="0"
+                                         Style="{StaticResource TextBoxAddReceitaDespesa}"
+                                         Text="{Binding FiltroDespesasVM.TempValorMinDesp, StringFormat=c, ConverterCulture=pt-BR, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <TextBlock Grid.Column="1" Grid.Row="1"
+                                           Text="Valor Máximo: "
+                                           Foreground="White"
+                                           FontSize="12"
+                                           Margin="15,7,0,0"/>
+                                <TextBox Grid.Row="1" Grid.Column="1"
+                                         Style="{StaticResource TextBoxAddReceitaDespesa}"
+                                         Text="{Binding FiltroDespesasVM.TempValorMaxDesp, StringFormat=c, ConverterCulture=pt-BR, UpdateSourceTrigger=PropertyChanged}"/>
+                                <!--#endregion-->
+
+                                <Button Grid.Column="0" Grid.Row="2" 
+                                        Content="Fechar"
+                                        Command="{Binding FiltroDespesasVM.FecharCommand}"
+                                        Style="{StaticResource BotaoEditarExcluir}"/>
+
+                                <Button Grid.Column="1" Grid.Row="2" 
+                                        Content="Salvar"
+                                        Command="{Binding FiltroDespesasVM.SalvarCommand}"
+                                        Style="{StaticResource BotaoEditarExcluir}"/>
+
+                            </Grid>
+                        </Border>
+                    </Popup>
+
+                    <Button Content="+"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource BotaoAddStyle}"
+                            Command="{Binding AbrirNovaDespesaCommand}"/>
+
+
+                    <Border BorderBrush="#FF8A30"
+                            BorderThickness="2"
+                            Margin="10"
+                            CornerRadius="10">
+                        <ListView x:Name="ListaDesp" 
+                                  ItemsSource="{Binding DespesasFiltradaView}"
+                                  SelectedItem="{Binding DespesasVM.DespesaSelecionada}"
+                                  Style="{StaticResource ListViewReceitaDespesa}"
+                                  SizeChanged="ListaDesp_SizeChanged">
+                            <ListView.Resources>
+                                <Style TargetType="GridViewColumnHeader"
+                                       BasedOn="{StaticResource EstiloGridViewColumnHeader}"/>
+                                <Style TargetType="ListViewItem"
+                                       BasedOn="{StaticResource ListViewItemStyle}"/>
+                            </ListView.Resources>
+
+                            <ListView.View>
+                                <GridView x:Name="GridDesp">
+                                    <GridViewColumn Header="Observações" DisplayMemberBinding="{Binding Observacoes}" Width="189"/>
+                                    <GridViewColumn Header="Preço" DisplayMemberBinding="{Binding Preco, StringFormat=c, ConverterCulture=pt-BR}" Width="189"/>
+                                    <GridViewColumn Header="Data" DisplayMemberBinding="{Binding dataDespesa, StringFormat=d, ConverterCulture=pt-BR}" Width="189"/>
+                                    <GridViewColumn Header="Tipo de Despesa" DisplayMemberBinding="{Binding tipoDespesa}" Width="197"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+
+                    <StackPanel Orientation="Horizontal" Grid.Row="1"
+                                Height="30"
+                                Margin="20,-75,0,0">
+                        <Button Content="Editar"
+                                Style="{StaticResource BotaoEditarExcluir}"
+                                Command="{Binding DespesasVM.EditarCommand}"/>
+
+                        <Button Content="Excluir"
+                                Style="{StaticResource BotaoEditarExcluir}"
+                                Command="{Binding DespesasVM.ExcluirCommand}"/>
+                    </StackPanel>
+                </Grid>
+                <!--#endregion-->
+
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
